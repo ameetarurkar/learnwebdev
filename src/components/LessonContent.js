@@ -1,178 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ChevronRight, FileCode, CheckCircle, Eye, Code } from "lucide-react";
-
-// Sample lesson data - in a real app, this would come from a database or API
-const lessonData = {
-  "html-fundamentals": [
-    {
-      id: "html-intro",
-      title: "What is HTML?",
-      content: `
-        <h3>Introduction to HTML</h3>
-        <p>HTML stands for <strong>HyperText Markup Language</strong>. It is the standard language used to create web pages.</p>
-        
-        <div class="image-container">
-          <img src="/api/placeholder/600/300" alt="HTML example" />
-          <p class="image-caption">A visual representation of HTML structure</p>
-        </div>
-        
-        <p>Think of HTML as the skeleton of a webpage - it provides the basic structure that holds everything together.</p>
-        
-        <div class="key-points">
-          <h4>Key Points:</h4>
-          <ul>
-            <li>HTML is not a programming language; it's a markup language</li>
-            <li>HTML uses "tags" to define different elements on a page</li>
-            <li>HTML documents have the file extension .html</li>
-            <li>Web browsers read HTML files and render them into visible web pages</li>
-          </ul>
-        </div>
-        
-        <div class="info-box">
-          <div class="info-box-header">
-            <span class="info-icon">ℹ️</span> Did You Know?
-          </div>
-          <p>HTML was created by Sir Tim Berners-Lee in 1991, while he was working at CERN. It was originally designed to help scientists share documents across different computer systems.</p>
-        </div>
-      `,
-    },
-    {
-      id: "html-structure-basics",
-      title: "Basic HTML Document Structure",
-      content: `
-        <h3>The Basic Structure of an HTML Document</h3>
-        <p>Every HTML document follows a standard structure. Here's what it looks like:</p>
-        
-        <div class="code-example">
-          <pre><code>&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-  &lt;head&gt;
-    &lt;title&gt;Page Title&lt;/title&gt;
-  &lt;/head&gt;
-  &lt;body&gt;
-    &lt;h1&gt;My First Heading&lt;/h1&gt;
-    &lt;p&gt;My first paragraph.&lt;/p&gt;
-  &lt;/body&gt;
-&lt;/html&gt;</code></pre>
-        </div>
-        
-        <div class="image-container">
-          <img src="/api/placeholder/600/400" alt="HTML document structure" />
-          <p class="image-caption">Visual breakdown of HTML document structure</p>
-        </div>
-        
-        <h3>Understanding Each Part:</h3>
-        <div class="element-breakdown">
-          <div class="element-item">
-            <div class="element-tag">&lt;!DOCTYPE html&gt;</div>
-            <div class="element-description">Tells the browser this is an HTML5 document</div>
-          </div>
-          <div class="element-item">
-            <div class="element-tag">&lt;html&gt;</div>
-            <div class="element-description">The root element of the HTML page</div>
-          </div>
-          <div class="element-item">
-            <div class="element-tag">&lt;head&gt;</div>
-            <div class="element-description">Contains meta-information about the document (not visible on the page)</div>
-          </div>
-          <div class="element-item">
-            <div class="element-tag">&lt;title&gt;</div>
-            <div class="element-description">Specifies the title shown in the browser tab</div>
-          </div>
-          <div class="element-item">
-            <div class="element-tag">&lt;body&gt;</div>
-            <div class="element-description">Contains the visible content of the page</div>
-          </div>
-        </div>
-      `,
-    },
-    {
-      id: "html-elements",
-      title: "Basic HTML Elements",
-      content: `
-        <h3>Common HTML Elements</h3>
-        <p>Let's learn about the most frequently used HTML elements:</p>
-        
-        <h4>Headings</h4>
-        <p>HTML has six levels of headings, from <code>&lt;h1&gt;</code> (most important) to <code>&lt;h6&gt;</code> (least important):</p>
-        
-        <div class="image-container">
-          <img src="/api/placeholder/600/200" alt="HTML headings" />
-          <p class="image-caption">Visual comparison of heading sizes</p>
-        </div>
-        
-        <div class="code-example">
-          <pre><code>&lt;h1&gt;This is heading 1&lt;/h1&gt;
-&lt;h2&gt;This is heading 2&lt;/h2&gt;
-&lt;h3&gt;This is heading 3&lt;/h3&gt;
-&lt;h4&gt;This is heading 4&lt;/h4&gt;
-&lt;h5&gt;This is heading 5&lt;/h5&gt;
-&lt;h6&gt;This is heading 6&lt;/h6&gt;</code></pre>
-        </div>
-        
-        <h4>Paragraphs</h4>
-        <p>Paragraphs are defined with the <code>&lt;p&gt;</code> tag:</p>
-        
-        <div class="code-example">
-          <pre><code>&lt;p&gt;This is a paragraph.&lt;/p&gt;
-&lt;p&gt;This is another paragraph.&lt;/p&gt;</code></pre>
-        </div>
-        
-        <h4>Links</h4>
-        <p>Links are created using the <code>&lt;a&gt;</code> tag with the <code>href</code> attribute:</p>
-        
-        <div class="code-example">
-          <pre><code>&lt;a href="https://www.example.com"&gt;Visit Example.com&lt;/a&gt;</code></pre>
-        </div>
-        
-        <h4>Images</h4>
-        <p>Images are added using the <code>&lt;img&gt;</code> tag with the <code>src</code> and <code>alt</code> attributes:</p>
-        
-        <div class="code-example">
-          <pre><code>&lt;img src="image.jpg" alt="Description of the image"&gt;</code></pre>
-        </div>
-        <p>Note: The <code>&lt;img&gt;</code> tag doesn't need a closing tag.</p>
-        
-        <div class="interactive-exercise">
-          <h4>Try It Yourself</h4>
-          <p>Which tag would you use to create a clickable link?</p>
-          <div class="options">
-            <div class="option correct">
-              <span>&lt;a&gt;</span>
-            </div>
-            <div class="option">
-              <span>&lt;link&gt;</span>
-            </div>
-            <div class="option">
-              <span>&lt;href&gt;</span>
-            </div>
-          </div>
-        </div>
-      `,
-    },
-  ],
-};
-
-// Documentation links
-const docLinks = {
-  "html-fundamentals": [
-    {
-      title: "MDN: HTML Basics",
-      url: "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/HTML_basics",
-      description: "Learn the basics of HTML",
-    },
-    {
-      title: "W3Schools: HTML Tutorial",
-      url: "https://www.w3schools.com/html/",
-      description: "HTML tutorial with examples and exercises",
-    },
-    {
-      title: "MDN: HTML elements reference",
-      url: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element",
-      description: "Comprehensive guide to all HTML elements",
-    },
-  ],
-};
+import { getLessons, getLesson, getDocLinks } from "../services/dataService";
 
 const LessonContent = ({
   activeConcept,
@@ -181,21 +9,21 @@ const LessonContent = ({
   setViewMode,
 }) => {
   const [showPreview, setShowPreview] = useState(false);
+  const [lessons, setLessons] = useState([]);
+  const [currentLesson, setCurrentLesson] = useState(null);
+  const [docLinks, setDocLinks] = useState([]);
 
-  // Get current lesson data
-  const getCurrentLessons = () => {
-    return lessonData[activeConcept] || [];
-  };
+  // Load lessons and doc links when component mounts or activeConcept changes
+  useEffect(() => {
+    setLessons(getLessons(activeConcept));
+    setDocLinks(getDocLinks(activeConcept));
+  }, [activeConcept]);
 
-  const getCurrentLesson = () => {
-    const lessons = getCurrentLessons();
-    return (
-      lessons[activeLesson] || {
-        title: "Lesson",
-        content: "Content not available",
-      }
-    );
-  };
+  // Update current lesson when activeLesson changes
+  useEffect(() => {
+    const lesson = getLesson(activeConcept, activeLesson);
+    setCurrentLesson(lesson);
+  }, [activeConcept, activeLesson]);
 
   // Code example to be displayed in preview
   const codeExample = `<!DOCTYPE html>
@@ -263,7 +91,7 @@ const LessonContent = ({
           <div className="mb-6">
             <div className="flex justify-between items-center mb-3">
               <h3 className="font-bold">
-                Lesson {activeLesson + 1}/{getCurrentLessons().length}
+                Lesson {activeLesson + 1}/{lessons.length}
               </h3>
               <div className="flex">
                 <button
@@ -281,13 +109,13 @@ const LessonContent = ({
                 </button>
                 <button
                   className={`p-1 rounded border ${
-                    activeLesson === getCurrentLessons().length - 1
+                    activeLesson === lessons.length - 1
                       ? "text-gray-400 cursor-not-allowed"
                       : "hover:bg-gray-100"
                   }`}
-                  disabled={activeLesson === getCurrentLessons().length - 1}
+                  disabled={activeLesson === lessons.length - 1}
                   onClick={() =>
-                    activeLesson < getCurrentLessons().length - 1 &&
+                    activeLesson < lessons.length - 1 &&
                     setActiveLesson(activeLesson + 1)
                   }
                 >
@@ -297,7 +125,7 @@ const LessonContent = ({
             </div>
 
             <div className="flex overflow-x-auto">
-              {getCurrentLessons().map((_, index) => (
+              {lessons.map((_, index) => (
                 <button
                   key={index}
                   className={`flex-shrink-0 p-2 mr-2 rounded-full w-8 h-8 flex items-center justify-center ${
@@ -315,18 +143,22 @@ const LessonContent = ({
 
           {/* Lesson Content */}
           <div className="overflow-y-auto pr-2 max-h-[calc(100vh-20rem)] custom-scrollbar">
-            <h3 className="font-bold text-lg mb-3">
-              {getCurrentLesson().title}
-            </h3>
-            <div
-              className="prose max-w-none"
-              dangerouslySetInnerHTML={{ __html: getCurrentLesson().content }}
-            ></div>
+            {currentLesson && (
+              <>
+                <h3 className="font-bold text-lg mb-3">
+                  {currentLesson.title}
+                </h3>
+                <div
+                  className="prose max-w-none"
+                  dangerouslySetInnerHTML={{ __html: currentLesson.content }}
+                ></div>
+              </>
+            )}
           </div>
 
           {/* Next Lesson/Start Challenge Buttons */}
           <div className="mt-6 flex justify-between">
-            {activeLesson < getCurrentLessons().length - 1 ? (
+            {activeLesson < lessons.length - 1 ? (
               <button
                 className="px-4 py-2 bg-blue-500 text-white rounded flex items-center"
                 onClick={() => setActiveLesson(activeLesson + 1)}
@@ -352,22 +184,21 @@ const LessonContent = ({
               Additional Resources:
             </h4>
             <div className="bg-gray-50 p-3 rounded border">
-              {docLinks[activeConcept] &&
-                docLinks[activeConcept].map((link, index) => (
-                  <div key={index} className="mb-2 last:mb-0">
-                    <a
-                      href="#"
-                      onClick={(e) => e.preventDefault()}
-                      className="text-blue-500 hover:text-blue-700 font-medium block flex items-center"
-                    >
-                      <FileCode size={14} className="mr-1" />
-                      {link.title}
-                    </a>
-                    <p className="text-sm text-gray-600 ml-5">
-                      {link.description}
-                    </p>
-                  </div>
-                ))}
+              {docLinks.map((link, index) => (
+                <div key={index} className="mb-2 last:mb-0">
+                  <a
+                    href="#"
+                    onClick={(e) => e.preventDefault()}
+                    className="text-blue-500 hover:text-blue-700 font-medium block flex items-center"
+                  >
+                    <FileCode size={14} className="mr-1" />
+                    {link.title}
+                  </a>
+                  <p className="text-sm text-gray-600 ml-5">
+                    {link.description}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         </div>

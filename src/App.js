@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import Sidebar from "./components/Sidebar";
-import Dashboard from "./components/Dashboard";
-import LessonContent from "./components/LessonContent";
-import Challenge from "./components/Challenge";
-import Quiz from "./components/Quiz";
+import Dashboard from "./components/Dashboard"; // Using updated component
+import LessonContent from "./components/LessonContent"; // Using updated component
+import Challenge from "./components/Challenge"; // Using updated component
+import Quiz from "./components/Quiz"; // Using updated component
 import AIHelper from "./components/AIHelper";
 import { X, Award, FileCode, Users } from "lucide-react";
 

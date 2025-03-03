@@ -1,0 +1,43 @@
+{
+  "html-fundamentals": [
+    {
+      "title": "MDN: HTML Basics",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/HTML_basics",
+      "description": "Learn the basics of HTML"
+    },
+    {
+      "title": "W3Schools: HTML Tutorial",
+      "url": "https://www.w3schools.com/html/",
+      "description": "HTML tutorial with examples and exercises"
+    },
+    {
+      "title": "MDN: HTML elements reference",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element",
+      "description": "Comprehensive guide to all HTML elements"
+    }
+  ],
+  "css-basics": [
+    {
+      "title": "MDN: CSS Basics",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/CSS_basics",
+      "description": "Learn the basics of CSS"
+    },
+    {
+      "title": "W3Schools: CSS Tutorial",
+      "url": "https://www.w3schools.com/css/",
+      "description": "CSS tutorial with examples and exercises"
+    }
+  ],
+  "javascript-basics": [
+    {
+      "title": "MDN: JavaScript Basics",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/JavaScript_basics",
+      "description": "Learn the basics of JavaScript"
+    },
+    {
+      "title": "W3Schools: JavaScript Tutorial",
+      "url": "https://www.w3schools.com/js/",
+      "description": "JavaScript tutorial with examples and exercises"
+    }
+  ]
+}

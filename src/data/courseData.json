@@ -1,0 +1,100 @@
+{
+  "courses": {
+    "html-fundamentals": {
+      "id": "html-fundamentals",
+      "title": "HTML Fundamentals",
+      "description": "Learn the basics of HTML",
+      "difficulty": "Beginner",
+      "color": "#E44D26",
+      "mastery": 35,
+      "totalLessons": 8,
+      "completedLessons": 3
+    },
+    "css-basics": {
+      "id": "css-basics",
+      "title": "CSS Basics",
+      "description": "Learn the fundamentals of CSS",
+      "difficulty": "Beginner",
+      "color": "#264DE4",
+      "mastery": 5,
+      "totalLessons": 10,
+      "completedLessons": 0,
+      "comingSoon": true
+    },
+    "javascript-basics": {
+      "id": "javascript-basics",
+      "title": "JavaScript Basics",
+      "description": "Learn the fundamentals of JavaScript",
+      "difficulty": "Intermediate",
+      "color": "#F7DF1E",
+      "mastery": 0,
+      "totalLessons": 12,
+      "completedLessons": 0,
+      "comingSoon": true
+    }
+  },
+  "learningPath": [
+    {
+      "id": "intro-to-html",
+      "title": "Introduction to HTML",
+      "description": "Learn the basics of HTML tags and structure",
+      "status": "completed"
+    },
+    {
+      "id": "html-text-formatting",
+      "title": "HTML Text Formatting",
+      "description": "Learn how to format text in your web pages",
+      "status": "in-progress"
+    },
+    {
+      "id": "html-links-images",
+      "title": "HTML Links & Images",
+      "description": "Learn how to add links and images to your web pages",
+      "status": "locked"
+    }
+  ],
+  "achievements": [
+    {
+      "id": 1,
+      "title": "HTML Rookie",
+      "description": "Completed your first HTML lesson",
+      "earned": true,
+      "category": "html"
+    },
+    {
+      "id": 2,
+      "title": "Challenge Accepted",
+      "description": "Completed your first coding challenge",
+      "earned": false,
+      "category": "challenge"
+    },
+    {
+      "id": 3,
+      "title": "Quiz Master",
+      "description": "Scored 100% on a quiz",
+      "earned": false,
+      "category": "quiz"
+    },
+    {
+      "id": 4,
+      "title": "HTML Pro",
+      "description": "Completed all HTML modules",
+      "earned": false,
+      "category": "html"
+    },
+    {
+      "id": 5,
+      "title": "CSS Beginner",
+      "description": "Completed your first CSS lesson",
+      "earned": false,
+      "category": "css"
+    },
+    {
+      "id": 6,
+      "title": "Style Guru",
+      "description": "Completed advanced CSS challenges",
+      "earned": false,
+      "category": "css"
+    }
+  ]
+}

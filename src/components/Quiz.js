@@ -1,56 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Code, CheckCircle, ChevronRight, Sparkles } from "lucide-react";
-
-// Sample quiz data
-const quizData = {
-  "html-fundamentals": {
-    id: "html-basics-quiz",
-    title: "HTML Basics Quiz",
-    questions: [
-      {
-        question: "What does HTML stand for?",
-        options: [
-          "Hyper Text Markup Language",
-          "High Tech Multi Language",
-          "Hyper Transfer Module Language",
-          "Hyper Text Modern Language",
-        ],
-        correctAnswer: 0,
-        explanation:
-          "HTML stands for Hyper Text Markup Language. It is the standard markup language for creating web pages.",
-      },
-      {
-        question: "Which tag is used to define a paragraph?",
-        options: ["<para>", "<p>", "<paragraph>", "<text>"],
-        correctAnswer: 1,
-        explanation:
-          "The <p> tag defines a paragraph in HTML. Paragraphs are block-level elements that automatically add some space before and after the content.",
-      },
-      {
-        question: "Which HTML element is used to define an image?",
-        options: ["<picture>", "<image>", "<img>", "<src>"],
-        correctAnswer: 2,
-        explanation:
-          "The <img> tag is used to embed images in an HTML document. It requires the src attribute to specify the image source and should include an alt attribute for accessibility.",
-      },
-      {
-        question: "What is the correct HTML element for the largest heading?",
-        options: ["<heading>", "<h6>", "<head>", "<h1>"],
-        correctAnswer: 3,
-        explanation:
-          "The <h1> tag defines the largest and most important heading. Headings range from <h1> (most important) to <h6> (least important).",
-      },
-      {
-        question:
-          "Which part of the HTML document contains information not displayed on the page?",
-        options: ["<body>", "<title>", "<head>", "<meta>"],
-        correctAnswer: 2,
-        explanation:
-          "The <head> section contains meta-information about the document that isn't displayed on the page, such as the title, character set, styles, scripts, and other meta information.",
-      },
-    ],
-  },
-};
+import { getQuiz } from "../services/dataService";
 
 const Quiz = ({ activeConcept, setViewMode }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -59,14 +9,31 @@ const Quiz = ({ activeConcept, setViewMode }) => {
   const [score, setScore] = useState(0);
   const [answeredQuestions, setAnsweredQuestions] = useState([]);
   const [showExplanation, setShowExplanation] = useState(false);
+  const [quiz, setQuiz] = useState(null);
 
-  const quiz = quizData[activeConcept] || {
-    title: "Quiz",
-    questions: [],
-  };
+  // Load quiz data
+  useEffect(() => {
+    const quizData = getQuiz(activeConcept);
+    setQuiz(
+      quizData || {
+        title: "Quiz",
+        questions: [],
+      }
+    );
+
+    // Reset states when quiz changes
+    setCurrentQuestion(0);
+    setSelectedOption(null);
+    setShowResult(false);
+    setScore(0);
+    setAnsweredQuestions([]);
+    setShowExplanation(false);
+  }, [activeConcept]);
 
   const handleAnswerClick = (optionIndex) => {
+    if (!quiz || !quiz.questions || quiz.questions.length === 0) return;
     if (answeredQuestions.includes(currentQuestion)) return;
+
     setSelectedOption(optionIndex);
     setShowExplanation(true);
 
@@ -80,6 +47,8 @@ const Quiz = ({ activeConcept, setViewMode }) => {
   };
 
   const handleNextQuestion = () => {
+    if (!quiz || !quiz.questions || quiz.questions.length === 0) return;
+
     setSelectedOption(null);
     setShowExplanation(false);
 
@@ -98,6 +67,29 @@ const Quiz = ({ activeConcept, setViewMode }) => {
     setAnsweredQuestions([]);
     setShowExplanation(false);
   };
+
+  // If quiz is not loaded or has no questions
+  if (!quiz || !quiz.questions) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center p-8 bg-white rounded-lg shadow-md max-w-lg">
+          <div className="w-16 h-16 rounded-full bg-blue-100 mx-auto mb-4 flex items-center justify-center text-blue-500">
+            <CheckCircle size={32} />
+          </div>
+          <h2 className="text-2xl font-bold mb-2">Quiz Coming Soon</h2>
+          <p className="text-gray-600 mb-4">
+            We're busy creating a quiz for this section. Check back soon!
+          </p>
+          <button
+            className="px-4 py-2 bg-blue-500 text-white rounded"
+            onClick={() => setViewMode("lesson")}
+          >
+            Back to Lessons
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const currentQ = quiz.questions[currentQuestion] || {
     question: "No questions available",
@@ -155,7 +147,7 @@ const Quiz = ({ activeConcept, setViewMode }) => {
           </div>
 
           {/* Question Navigation */}
-          {!showResult && (
+          {!showResult && quiz.questions.length > 0 && (
             <>
               <div className="mb-4">
                 <div className="flex justify-between text-sm text-gray-600 mb-1">
@@ -205,7 +197,7 @@ const Quiz = ({ activeConcept, setViewMode }) => {
           )}
 
           {/* Quiz Instructions */}
-          {!showResult && (
+          {!showResult && quiz.questions.length > 0 && (
             <div className="mb-6">
               <h3 className="font-bold mb-2">Quiz Instructions:</h3>
               <ul className="space-y-1 text-sm">
@@ -237,7 +229,7 @@ const Quiz = ({ activeConcept, setViewMode }) => {
 
       {/* Right panel - Quiz content */}
       <div className="col-span-2 p-6 h-full overflow-auto">
-        {!showResult ? (
+        {!showResult && quiz.questions.length > 0 ? (
           <div className="max-w-3xl mx-auto">
             <div className="bg-white p-6 rounded-lg shadow-md">
               <div className="mb-6">
@@ -390,7 +382,7 @@ const Quiz = ({ activeConcept, setViewMode }) => {
               </div>
             </div>
           </div>
-        ) : (
+        ) : showResult ? (
           <div className="max-w-3xl mx-auto">
             <div className="bg-white p-8 rounded-lg shadow-md text-center">
               <div className="mb-6">
@@ -412,7 +404,7 @@ const Quiz = ({ activeConcept, setViewMode }) => {
                 </div>
                 <h2 className="text-2xl font-bold mb-2">Quiz Completed!</h2>
                 <p className="text-gray-600">
-                  You've completed the HTML Basics Quiz.
+                  You've completed the {quiz.title}.
                 </p>
               </div>
 
@@ -472,6 +464,10 @@ const Quiz = ({ activeConcept, setViewMode }) => {
                 </button>
               </div>
             </div>
+          </div>
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <p>No quiz questions available for this module.</p>
           </div>
         )}
       </div>

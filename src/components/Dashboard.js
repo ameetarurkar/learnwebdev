@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Activity,
   BookOpen,
@@ -7,36 +7,32 @@ import {
   ChevronRight,
   FileCode,
 } from "lucide-react";
+import {
+  getCourses,
+  getAchievements,
+  getLearningPath,
+  getDocLinks,
+} from "../services/dataService";
 
 const Dashboard = ({ navigateToModule }) => {
-  // Progress tracking data
-  const conceptsData = {
-    html: { mastery: 35, color: "#E44D26" },
-    css: { mastery: 5, color: "#264DE4" },
-    javascript: { mastery: 0, color: "#F7DF1E" },
-  };
+  const [courses, setCourses] = useState({});
+  const [achievements, setAchievements] = useState([]);
+  const [learningPath, setLearningPath] = useState([]);
+  const [docLinks, setDocLinks] = useState({});
 
-  // Achievement data
-  const achievements = [
-    {
-      id: 1,
-      title: "HTML Rookie",
-      description: "Completed your first HTML lesson",
-      earned: true,
-    },
-    {
-      id: 2,
-      title: "Challenge Accepted",
-      description: "Completed your first coding challenge",
-      earned: false,
-    },
-    {
-      id: 3,
-      title: "Quiz Master",
-      description: "Scored 100% on a quiz",
-      earned: false,
-    },
-  ];
+  useEffect(() => {
+    // Load data from our data service
+    setCourses(getCourses());
+    setAchievements(getAchievements());
+    setLearningPath(getLearningPath());
+
+    // Get documentation links for each course
+    const links = {};
+    Object.keys(getCourses()).forEach((courseId) => {
+      links[courseId] = getDocLinks(courseId);
+    });
+    setDocLinks(links);
+  }, []);
 
   return (
     <div className="p-6">
@@ -68,18 +64,18 @@ const Dashboard = ({ navigateToModule }) => {
             <h3 className="font-bold text-lg">Your Progress</h3>
           </div>
           <div className="space-y-4">
-            {Object.entries(conceptsData).map(([concept, data]) => (
-              <div key={concept} className="space-y-1">
+            {Object.entries(courses).map(([courseId, course]) => (
+              <div key={courseId} className="space-y-1">
                 <div className="flex justify-between text-sm">
-                  <span className="capitalize">{concept}</span>
-                  <span>{data.mastery}%</span>
+                  <span className="capitalize">{courseId.split("-")[0]}</span>
+                  <span>{course.mastery}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
                     className="h-2 rounded-full"
                     style={{
-                      width: `${data.mastery}%`,
-                      backgroundColor: data.color,
+                      width: `${course.mastery}%`,
+                      backgroundColor: course.color,
                     }}
                   ></div>
                 </div>
@@ -135,7 +131,7 @@ const Dashboard = ({ navigateToModule }) => {
             <h3 className="font-bold text-lg">Achievements</h3>
           </div>
           <div className="space-y-3">
-            {achievements.map((achievement) => (
+            {achievements.slice(0, 3).map((achievement) => (
               <div
                 key={achievement.id}
                 className={`p-2 rounded-lg border flex items-center ${
@@ -181,69 +177,72 @@ const Dashboard = ({ navigateToModule }) => {
         <div className="relative">
           <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
 
-          <div className="relative pl-12 pb-6">
-            <div className="absolute left-2 w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center">
-              <CheckCircle size={14} />
-            </div>
-            <div className="bg-green-50 border border-green-200 p-3 rounded-lg">
-              <div className="font-medium">Introduction to HTML</div>
-              <div className="text-sm text-gray-600">
-                Learn the basics of HTML tags and structure
-              </div>
-              <div className="mt-2 flex">
-                <span className="px-2 py-0.5 bg-green-100 text-green-800 rounded text-xs">
-                  Completed
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="relative pl-12 pb-6">
-            <div className="absolute left-2 w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center">
-              <Activity size={14} />
-            </div>
-            <div className="bg-blue-50 border border-blue-200 p-3 rounded-lg">
-              <div className="font-medium">HTML Text Formatting</div>
-              <div className="text-sm text-gray-600">
-                Learn how to format text in your web pages
-              </div>
-              <div className="mt-2 flex">
-                <span className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-xs">
-                  In Progress
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="relative pl-12 pb-6">
-            <div className="absolute left-2 w-6 h-6 rounded-full bg-gray-300 text-white flex items-center justify-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+          {learningPath.map((item, index) => (
+            <div key={item.id} className="relative pl-12 pb-6">
+              <div
+                className={`absolute left-2 w-6 h-6 rounded-full flex items-center justify-center
+                  ${
+                    item.status === "completed"
+                      ? "bg-green-500 text-white"
+                      : item.status === "in-progress"
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-300 text-white"
+                  }`}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                />
-              </svg>
-            </div>
-            <div className="bg-gray-50 border border-gray-200 p-3 rounded-lg">
-              <div className="font-medium">HTML Links & Images</div>
-              <div className="text-sm text-gray-600">
-                Learn how to add links and images to your web pages
+                {item.status === "completed" ? (
+                  <CheckCircle size={14} />
+                ) : item.status === "in-progress" ? (
+                  <Activity size={14} />
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                    />
+                  </svg>
+                )}
               </div>
-              <div className="mt-2 flex">
-                <span className="px-2 py-0.5 bg-gray-200 text-gray-600 rounded text-xs">
-                  Locked
-                </span>
+              <div
+                className={`p-3 rounded-lg
+                  ${
+                    item.status === "completed"
+                      ? "bg-green-50 border border-green-200"
+                      : item.status === "in-progress"
+                      ? "bg-blue-50 border border-blue-200"
+                      : "bg-gray-50 border border-gray-200"
+                  }`}
+              >
+                <div className="font-medium">{item.title}</div>
+                <div className="text-sm text-gray-600">{item.description}</div>
+                <div className="mt-2 flex">
+                  <span
+                    className={`px-2 py-0.5 rounded text-xs
+                      ${
+                        item.status === "completed"
+                          ? "bg-green-100 text-green-800"
+                          : item.status === "in-progress"
+                          ? "bg-blue-100 text-blue-800"
+                          : "bg-gray-200 text-gray-600"
+                      }`}
+                  >
+                    {item.status === "completed"
+                      ? "Completed"
+                      : item.status === "in-progress"
+                      ? "In Progress"
+                      : "Locked"}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
 
@@ -251,50 +250,64 @@ const Dashboard = ({ navigateToModule }) => {
       <div className="bg-white p-4 rounded-lg shadow mb-6">
         <h3 className="font-bold text-lg mb-4">Continue Learning</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="border rounded-lg overflow-hidden">
-            <div className="h-40 bg-red-100 flex items-center justify-center relative">
-              <div className="text-5xl text-red-500">&lt;/&gt;</div>
-              <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
-                35% Complete
+          {Object.entries(courses).map(([courseId, course]) => {
+            if (course.comingSoon) return null;
+            return (
+              <div key={courseId} className="border rounded-lg overflow-hidden">
+                <div className="h-40 bg-red-100 flex items-center justify-center relative">
+                  <div className="text-5xl text-red-500">&lt;/&gt;</div>
+                  <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
+                    {course.mastery}% Complete
+                  </div>
+                </div>
+                <div className="p-4">
+                  <h4 className="font-bold mb-1">{course.title}</h4>
+                  <p className="text-sm text-gray-500 mb-3">
+                    {course.description}
+                  </p>
+                  <div className="flex justify-between items-center">
+                    <button
+                      onClick={() => navigateToModule(courseId)}
+                      className="px-3 py-1 bg-blue-500 text-white rounded text-sm"
+                    >
+                      Continue
+                    </button>
+                    <div className="text-xs text-gray-500">
+                      {course.completedLessons}/{course.totalLessons} Lessons
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="p-4">
-              <h4 className="font-bold mb-1">HTML Fundamentals</h4>
-              <p className="text-sm text-gray-500 mb-3">
-                Learn the basics of HTML
-              </p>
-              <div className="flex justify-between items-center">
-                <button
-                  onClick={() => navigateToModule("html-fundamentals")}
-                  className="px-3 py-1 bg-blue-500 text-white rounded text-sm"
-                >
-                  Continue
-                </button>
-                <div className="text-xs text-gray-500">3/8 Lessons</div>
-              </div>
-            </div>
-          </div>
+            );
+          })}
 
-          <div className="border rounded-lg overflow-hidden">
-            <div className="h-40 bg-blue-100 flex items-center justify-center relative">
-              <div className="text-5xl text-blue-500">{`{ }`}</div>
-              <div className="absolute top-2 right-2 bg-gray-500 text-white text-xs px-2 py-1 rounded">
-                Coming Soon
+          {Object.entries(courses).map(([courseId, course]) => {
+            if (!course.comingSoon) return null;
+            return (
+              <div key={courseId} className="border rounded-lg overflow-hidden">
+                <div className="h-40 bg-blue-100 flex items-center justify-center relative">
+                  <div className="text-5xl text-blue-500">{`{ }`}</div>
+                  <div className="absolute top-2 right-2 bg-gray-500 text-white text-xs px-2 py-1 rounded">
+                    Coming Soon
+                  </div>
+                </div>
+                <div className="p-4">
+                  <h4 className="font-bold mb-1">{course.title}</h4>
+                  <p className="text-sm text-gray-500 mb-3">
+                    {course.description}
+                  </p>
+                  <div className="flex justify-between items-center">
+                    <button className="px-3 py-1 bg-gray-300 text-gray-700 rounded text-sm">
+                      Coming Soon
+                    </button>
+                    <div className="text-xs text-gray-500">
+                      {course.completedLessons}/{course.totalLessons} Lessons
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="p-4">
-              <h4 className="font-bold mb-1">CSS Basics</h4>
-              <p className="text-sm text-gray-500 mb-3">
-                Learn the fundamentals of CSS
-              </p>
-              <div className="flex justify-between items-center">
-                <button className="px-3 py-1 bg-gray-300 text-gray-700 rounded text-sm">
-                  Coming Soon
-                </button>
-                <div className="text-xs text-gray-500">0/10 Lessons</div>
-              </div>
-            </div>
-          </div>
+            );
+          })}
         </div>
       </div>
 
@@ -331,86 +344,50 @@ const Dashboard = ({ navigateToModule }) => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="border-l-4 border-red-500 pl-3">
-            <h4 className="font-medium">HTML</h4>
-            <div className="mt-2 space-y-1">
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                className="text-blue-500 hover:text-blue-700 block text-sm"
-              >
-                MDN: HTML Basics
-              </a>
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                className="text-blue-500 hover:text-blue-700 block text-sm"
-              >
-                HTML elements reference
-              </a>
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                className="text-sm text-gray-500"
-              >
-                View all HTML docs →
-              </a>
-            </div>
-          </div>
+          {Object.entries(docLinks).map(([courseId, links], index) => {
+            if (!links || links.length === 0) return null;
 
-          <div className="border-l-4 border-blue-500 pl-3">
-            <h4 className="font-medium">CSS</h4>
-            <div className="mt-2 space-y-1">
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                className="text-blue-500 hover:text-blue-700 block text-sm"
-              >
-                MDN: CSS Basics
-              </a>
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                className="text-blue-500 hover:text-blue-700 block text-sm"
-              >
-                CSS Selectors
-              </a>
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                className="text-sm text-gray-500"
-              >
-                View all CSS docs →
-              </a>
-            </div>
-          </div>
+            const course = courses[courseId];
+            if (!course) return null;
 
-          <div className="border-l-4 border-yellow-500 pl-3">
-            <h4 className="font-medium">JavaScript</h4>
-            <div className="mt-2 space-y-1">
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                className="text-blue-500 hover:text-blue-700 block text-sm"
+            return (
+              <div
+                key={courseId}
+                className={`border-l-4 pl-3 border-${
+                  courseId.includes("html")
+                    ? "red-500"
+                    : courseId.includes("css")
+                    ? "blue-500"
+                    : "yellow-500"
+                }`}
               >
-                MDN: JavaScript Basics
-              </a>
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                className="text-blue-500 hover:text-blue-700 block text-sm"
-              >
-                JavaScript Functions
-              </a>
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                className="text-sm text-gray-500"
-              >
-                View all JS docs →
-              </a>
-            </div>
-          </div>
+                <h4 className="font-medium">
+                  {courseId.split("-")[0].toUpperCase()}
+                </h4>
+                <div className="mt-2 space-y-1">
+                  {links.slice(0, 2).map((link, linkIndex) => (
+                    <a
+                      key={linkIndex}
+                      href="#"
+                      onClick={(e) => e.preventDefault()}
+                      className="text-blue-500 hover:text-blue-700 block text-sm"
+                    >
+                      {link.title}
+                    </a>
+                  ))}
+                  {links.length > 2 && (
+                    <a
+                      href="#"
+                      onClick={(e) => e.preventDefault()}
+                      className="text-sm text-gray-500"
+                    >
+                      View all {courseId.split("-")[0].toUpperCase()} docs →
+                    </a>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

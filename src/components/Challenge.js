@@ -1,96 +1,53 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Code, Eye, CheckCircle } from "lucide-react";
-
-// Sample challenge data
-const challengeData = {
-  "html-fundamentals": {
-    id: "html-basics-challenge",
-    title: "Creating Your First HTML Page",
-    description: "Put your knowledge to work by creating a simple HTML page",
-    instructions: `
-      <p>Create a simple HTML page about your favorite hobby.</p>
-      <p>Your page should include:</p>
-      <ul>
-        <li>A proper HTML document structure</li>
-        <li>A title for your page</li>
-        <li>At least one heading</li>
-        <li>At least two paragraphs</li>
-        <li>A link to a website related to your hobby</li>
-        <li>A placeholder for an image (use "#" as the src)</li>
-      </ul>
-    `,
-    startingCode: `<!DOCTYPE html>
-<html>
-  <head>
-    <title>My Favorite Hobby</title>
-  </head>
-  <body>
-    <!-- Add your content here -->
-    
-  </body>
-</html>`,
-    solutionCriteria: [
-      {
-        criterion: "Has valid HTML structure",
-        description: "Make sure you have DOCTYPE, html, head, and body tags",
-      },
-      {
-        criterion: "Contains at least one heading",
-        description: "Use h1-h6 tags for headings",
-      },
-      {
-        criterion: "Contains at least two paragraphs",
-        description: "Use p tags for paragraphs",
-      },
-      {
-        criterion: "Contains a link",
-        description: "Use the a tag with href attribute",
-      },
-      {
-        criterion: "Contains an image",
-        description: "Use the img tag with src and alt attributes",
-      },
-    ],
-  },
-};
-
-// Documentation links
-const docLinks = {
-  "html-fundamentals": [
-    {
-      title: "MDN: HTML elements reference",
-      url: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element",
-      description: "Comprehensive guide to all HTML elements",
-    },
-    {
-      title: "W3Schools: HTML Tutorial",
-      url: "https://www.w3schools.com/html/",
-      description: "HTML tutorial with examples and exercises",
-    },
-  ],
-};
+import { getChallenge, getDocLinks } from "../services/dataService";
 
 const Challenge = ({ activeConcept, setViewMode }) => {
-  const [codeInput, setCodeInput] = useState(
-    challengeData[activeConcept]?.startingCode || ""
-  );
+  const [codeInput, setCodeInput] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const [checkedSolution, setCheckedSolution] = useState(false);
   const [checkResults, setCheckResults] = useState([]);
+  const [challenge, setChallenge] = useState(null);
+  const [docLinks, setDocLinks] = useState([]);
 
-  const challenge = challengeData[activeConcept] || {
-    title: "Challenge",
-    description: "No challenge available for this module yet",
-    instructions: "Please check back later",
-    startingCode: "// No challenge available",
-    solutionCriteria: [],
-  };
+  // Load challenge and doc links data
+  useEffect(() => {
+    const challengeData = getChallenge(activeConcept);
+    console.log("Challenge data loaded:", challengeData); // For debugging
+
+    if (challengeData) {
+      setChallenge(challengeData);
+      setCodeInput(challengeData.startingCode || "");
+    } else {
+      // Fallback if no challenge data exists
+      setChallenge({
+        title: "Challenge",
+        description: "No challenge available for this module yet",
+        instructions: "Please check back later",
+        startingCode: "// No challenge available",
+        solutionCriteria: [],
+      });
+      setCodeInput("// No challenge available");
+    }
+
+    setDocLinks(getDocLinks(activeConcept));
+  }, [activeConcept]);
+
+  // No need for this useEffect since we're handling the fallback in the loading useEffect
+  // This was causing a potential circular dependency with the challenge state
 
   // Simple solution checker - in a real app this would be more sophisticated
   const checkSolution = () => {
+    console.log("Checking solution with challenge:", challenge);
+    if (!challenge || !challenge.solutionCriteria) {
+      console.error("Missing challenge data or solution criteria");
+      return;
+    }
+
     const results = challenge.solutionCriteria.map((criterion) => {
       // Very basic checks - a real version would be more robust
       let passed = true;
+      console.log("Checking criterion:", criterion);
 
       if (criterion.criterion.includes("HTML structure")) {
         passed =
@@ -120,20 +77,19 @@ const Challenge = ({ activeConcept, setViewMode }) => {
 
     setCheckResults(results);
     setCheckedSolution(true);
-
-    // If all criteria passed, show a success message or trigger next steps
-    const allPassed = results.every((result) => result.passed);
-    if (allPassed) {
-      // In a real app, you would track progress, maybe unlock the next section, etc.
-      console.log("All criteria passed! Well done!");
-    }
   };
 
   const resetSolution = () => {
-    setCodeInput(challenge.startingCode);
+    if (challenge) {
+      setCodeInput(challenge.startingCode);
+    }
     setCheckedSolution(false);
     setCheckResults([]);
   };
+
+  if (!challenge) {
+    return <div>Loading challenge...</div>;
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 h-full">
@@ -195,27 +151,26 @@ const Challenge = ({ activeConcept, setViewMode }) => {
           <div className="mb-6">
             <h3 className="font-bold mb-2">Reference Docs:</h3>
             <ul className="space-y-1">
-              {docLinks[activeConcept] &&
-                docLinks[activeConcept].map((link, index) => (
-                  <li key={index}>
-                    <a
-                      href="#"
-                      onClick={(e) => e.preventDefault()}
-                      className="text-blue-500 hover:text-blue-700 inline-flex items-center"
+              {docLinks.map((link, index) => (
+                <li key={index}>
+                  <a
+                    href="#"
+                    onClick={(e) => e.preventDefault()}
+                    className="text-blue-500 hover:text-blue-700 inline-flex items-center"
+                  >
+                    {link.title}
+                    <svg
+                      className="w-3 h-3 ml-1"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      {link.title}
-                      <svg
-                        className="w-3 h-3 ml-1"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"></path>
-                        <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"></path>
-                      </svg>
-                    </a>
-                  </li>
-                ))}
+                      <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"></path>
+                      <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"></path>
+                    </svg>
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -288,24 +243,25 @@ const Challenge = ({ activeConcept, setViewMode }) => {
                 ))}
               </div>
 
-              {checkResults.every((result) => result.passed) && (
-                <div className="mt-4 p-3 bg-green-100 border border-green-300 rounded-lg">
-                  <div className="flex items-center text-green-800 font-medium">
-                    <CheckCircle size={16} className="mr-2" />
-                    Congratulations! You've completed the challenge.
+              {checkResults.length > 0 &&
+                checkResults.every((result) => result.passed) && (
+                  <div className="mt-4 p-3 bg-green-100 border border-green-300 rounded-lg">
+                    <div className="flex items-center text-green-800 font-medium">
+                      <CheckCircle size={16} className="mr-2" />
+                      Congratulations! You've completed the challenge.
+                    </div>
+                    <p className="text-sm text-green-700 mt-1">
+                      You've demonstrated your understanding of basic HTML
+                      structure. Ready to move on to the next lesson?
+                    </p>
+                    <button
+                      className="mt-2 px-4 py-1 bg-green-500 text-white rounded text-sm"
+                      onClick={() => setViewMode("quiz")}
+                    >
+                      Take the Quiz
+                    </button>
                   </div>
-                  <p className="text-sm text-green-700 mt-1">
-                    You've demonstrated your understanding of basic HTML
-                    structure. Ready to move on to the next lesson?
-                  </p>
-                  <button
-                    className="mt-2 px-4 py-1 bg-green-500 text-white rounded text-sm"
-                    onClick={() => setViewMode("quiz")}
-                  >
-                    Take the Quiz
-                  </button>
-                </div>
-              )}
+                )}
             </div>
           )}
         </div>

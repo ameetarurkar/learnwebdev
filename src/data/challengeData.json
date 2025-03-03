@@ -1,0 +1,39 @@
+{
+  "html-fundamentals": {
+    "id": "html-basics-challenge",
+    "title": "Creating Your First HTML Page",
+    "description": "Put your knowledge to work by creating a simple HTML page",
+    "instructions": "<p>Create a simple HTML page about your favorite hobby.</p><p>Your page should include:</p><ul><li>A proper HTML document structure</li><li>A title for your page</li><li>At least one heading</li><li>At least two paragraphs</li><li>A link to a website related to your hobby</li><li>A placeholder for an image (use \"#\" as the src)</li></ul>",
+    "startingCode": "<!DOCTYPE html>\n<html>\n  <head>\n    <title>My Favorite Hobby</title>\n  </head>\n  <body>\n    <!-- Add your content here -->\n    \n  </body>\n</html>",
+    "solutionCriteria": [
+      {
+        "criterion": "Has valid HTML structure",
+        "description": "Make sure you have DOCTYPE, html, head, and body tags"
+      },
+      {
+        "criterion": "Contains at least one heading",
+        "description": "Use h1-h6 tags for headings"
+      },
+      {
+        "criterion": "Contains at least two paragraphs",
+        "description": "Use p tags for paragraphs"
+      },
+      {
+        "criterion": "Contains a link",
+        "description": "Use the a tag with href attribute"
+      },
+      {
+        "criterion": "Contains an image",
+        "description": "Use the img tag with src and alt attributes"
+      }
+    ]
+  },
+  "css-basics": {
+    "id": "css-basics-challenge",
+    "title": "Styling Your First Webpage",
+    "description": "Apply CSS styling to a basic HTML page",
+    "instructions": "<p>Coming soon</p>",
+    "startingCode": "/* Coming soon */",
+    "solutionCriteria": []
+  }
+}
